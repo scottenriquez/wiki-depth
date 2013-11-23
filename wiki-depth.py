@@ -1,4 +1,4 @@
-import sys, wikipedia
+import sys, wikipedia, threading
 
 def foundInCurrentDepth(currentDepthRow, targetPage):
 	"""
@@ -10,17 +10,25 @@ def foundInCurrentDepth(currentDepthRow, targetPage):
 
 	return targetPage.title in currentDepthRow
 
-def getLinksForSearchTerms(results):
+def getLinksForSearchTerms(results, depthRow):
 	"""
 	#results: the output of a wikipedia.search() call
-	
+	#depthRow: links for the current row
+
 	encodes the search results and generates a list
 	"""
 
-	pageTitles = []
 	for page in results:
-		pageTitles.append(page.encode("utf-8"))
-	return pageTitles
+		depthRow.append(page.encode("utf-8"))
+	return
+
+def buildNextDepth(link, nextDepthRow, pagesHit, depth):
+	print("Searching the \"" + link + "\" page at depth " + str(depth))
+	pagesHit[link] = 1
+	#build the next depth's link list
+	getLinksForSearchTerms(wikipedia.search(link), nextDepthRow)
+	return
+
 
 def depthSearch(userStartPage, depthRow, targetPage, pagesHit, depth):
 	"""
@@ -39,15 +47,19 @@ def depthSearch(userStartPage, depthRow, targetPage, pagesHit, depth):
 		return depth
 	print("Target page not found at depth " + str(depth))
 	print("Building new search...")
+	threadList = []
 	nextDepthRow = []
 	#iterate the page links for the current depth
 	for link in depthRow:
 		#check if already seen
 		if link not in pagesHit:
-			print("Searching the \"" + link + "\" page at depth " + str(depth))
-			pagesHit[link] = 1
-			#build the next depth's link list
-			nextDepthRow += getLinksForSearchTerms(wikipedia.search(link))
+			newThread = threading.Thread(target = buildNextDepth, args = (link, nextDepthRow, pagesHit, depth))
+			threadList.append(newThread)
+			#buildNextDepth(link, nextDepthRow, pagesHit, depth)
+	for thread in threadList:
+		thread.start()
+	for thread in threadList:
+		thread.join()
 	#go to next depth
 	depthSearch(userStartPage, nextDepthRow, targetPage, pagesHit, depth + 1)
 
