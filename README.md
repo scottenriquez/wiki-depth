@@ -1,4 +1,4 @@
 wiki-depth
 ==========
 
-A multithreaded Python that finds the minimum number of links between two Wikipedia articles
+A multithreaded Python script that finds the minimum number of links between two Wikipedia articles.
