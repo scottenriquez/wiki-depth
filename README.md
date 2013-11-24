@@ -13,3 +13,6 @@ The input file accepts lines of type:<br>
 <code>"Start Page" "Target Page"</code>
 Where <code>"Start Page"</code> and <code>"End Page"</code> are valid titles of Wikipedia articles. There is no error checking to make sure that these pages 
 are valid.
+
+Also inside the repo are a sample input file and a sample output file. The output contains a list of all the pages searched, 
+as well as the depth that the links were found in. Due to Python's threading, the *.out files are somewhat poorly formatted.
