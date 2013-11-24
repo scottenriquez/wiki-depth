@@ -15,6 +15,9 @@ def wikiDepth(reader, writer):
 		print("\n\n\n\n\n\n")
 
 def parser(reader):
+	"""
+	splits input based on the " character
+	"""
 	return (map(str, line.split("\"")) for line in reader)
 
 wikiDepth(sys.stdin, sys.stdout)
