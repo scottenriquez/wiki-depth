@@ -1,5 +1,7 @@
 import sys, wikipedia, threading
 
+MAX_THREADS = 3000
+
 def depthSearch(userStartPage, depthRow, targetPage, pagesHit, depth):
 	"""
 	#userStartPage: the Wikipedia page instantiated from the user's command line arguments
@@ -12,8 +14,9 @@ def depthSearch(userStartPage, depthRow, targetPage, pagesHit, depth):
 	"""
 	
 	#check if the target page is the current depth
+	global MAX_THREADS
 	if foundInCurrentDepth(depthRow, targetPage):
-		print("Found the target page: " + targetPage.title + " at a depth of " + str(depth) + " from " + userStartPage.title)
+		print("Found the target page \"" + targetPage.title + "\" at a depth of " + str(depth) + " from \"" + userStartPage.title + "\"")
 		return depth
 	print("Target page not found at depth " + str(depth))
 	print("Building new search...")
@@ -23,8 +26,13 @@ def depthSearch(userStartPage, depthRow, targetPage, pagesHit, depth):
 	for link in depthRow:
 		#check if already seen
 		if link not in pagesHit:
-			newThread = threading.Thread(target = buildNextDepth, args = (link, nextDepthRow, pagesHit, depth))
-			threadList.append(newThread)
+			if len(threadList) <= MAX_THREADS:
+				newThread = threading.Thread(target = buildNextDepth, args = (link, nextDepthRow, pagesHit, depth))
+				threadList.append(newThread)
+			else:
+				for thread in threadList: thread.start()
+				for thread in threadList: thread.join()
+				threadList = []
 	#start and join threads, start depth search on next depthSearch
 	for thread in threadList: thread.start()
 	for thread in threadList: thread.join()
