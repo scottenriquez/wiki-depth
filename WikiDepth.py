@@ -12,7 +12,7 @@ def wikiDepth(reader, writer):
 		pagesSearched = {}
 		initialDepth = 0
 		depthSearch(userStartPage, initialDepthRow, userTargetPage, pagesSearched, initialDepth)
-		print("\n\n\n\n\n\n")
+		print("\n\n")
 
 def parser(reader):
 	"""
